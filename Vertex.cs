@@ -15,6 +15,7 @@ namespace DijkstraAlgorithm
 
         public Vertex(T value)
         {
+            Value = value;
             Neighbors = new List<Edge<T>>();
         }
 
@@ -25,8 +26,13 @@ namespace DijkstraAlgorithm
 
         public Edge<T> FindFirstEdge(Vertex<T> a)
         {
+            if(a.Equals(this))
+            {
+                return new Edge<T>(a, a, 0);
+            }
             return Neighbors.Where(x => x.EndingPoint.Equals(a)).First();
         }
+
 
     }
 }

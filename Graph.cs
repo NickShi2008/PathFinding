@@ -45,6 +45,7 @@ namespace DijkstraAlgorithm
 
         private bool SearchVertex(Vertex<T> vertex)
         {
+            bool check = Vertices.Contains(vertex); 
             return vertex != null && Vertices.Contains(vertex);
         }
 
@@ -56,8 +57,11 @@ namespace DijkstraAlgorithm
                 Edge<T> BConnector = new Edge<T>(b, a, distance);
                 Edges.Add(AConnector);
                 Edges.Add(BConnector);
-                a.Neighbors.Add(AConnector);
-                b.Neighbors.Add(BConnector);
+                if(!a.Neighbors.Contains(AConnector))
+                    a.Neighbors.Add(AConnector);
+                if (!b.Neighbors.Contains(BConnector))
+                    b.Neighbors.Add(BConnector);
+
                 return true;
             }
             return false;
