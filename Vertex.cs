@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DijkstraAlgorithm
+namespace PathFinding
 {
     public class Vertex<T> where T : IComparable
     {

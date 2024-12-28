@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Linq;
 using System.ComponentModel;
 
-namespace DijkstraAlgorithm
+namespace PathFinding
 {
     public class Program
     {
