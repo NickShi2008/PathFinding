@@ -54,13 +54,9 @@ namespace PathFinding
             if (SearchVertex(a) && SearchVertex(b))
             {
                 Edge<T> AConnector = new Edge<T>(a, b, distance);
-              //  Edge<T> BConnector = new Edge<T>(b, a, distance);
                 Edges.Add(AConnector);
-              //  Edges.Add(BConnector);
                 if(!a.Neighbors.Contains(AConnector))
                     a.Neighbors.Add(AConnector);
-               /* if (!b.Neighbors.Contains(BConnector))
-                    b.Neighbors.Add(BConnector);*/
 
                 return true;
             }
@@ -112,7 +108,6 @@ namespace PathFinding
             Dictionary<Vertex<T>, float> totalDistances = new Dictionary<Vertex<T>, float>();
             List<Vertex<T>> visitedVertices = new List<Vertex<T>>();
             PriorityQueue<Vertex<T>, float> queuedDistances = new PriorityQueue<Vertex<T>, float>();
-            
 
             //set each vertex as Unknown
             foreach (var v in Vertices)
@@ -127,7 +122,7 @@ namespace PathFinding
 
 
             //looks till visits all vertex
-            while (queuedDistances.Count > 0)
+            while(!visitedVertices.Contains(end))
             {
                 Vertex<T> currentVertex = queuedDistances.Dequeue();
 
@@ -137,7 +132,7 @@ namespace PathFinding
 
                 foreach (var edge in currentVertex.Neighbors)
                 {
-                    if (totalDistances[currentVertex] + totalDistances[currentVertex]
+                    if (totalDistances[currentVertex] + edge.Distance
                         < totalDistances[edge.EndingPoint])
                     {
                         totalDistances[edge.EndingPoint] = totalDistances[currentVertex] + edge.Distance;
@@ -150,8 +145,6 @@ namespace PathFinding
 
                 }
             }
-
-
             //traces backwards to the beginning
 
             Stack<Vertex<T>> reversePath = new Stack<Vertex<T>>();
@@ -184,5 +177,45 @@ namespace PathFinding
 
             return path;
         }
+
+        public List<Vertex<T>> ASTAR(Vertex<T> start, Vertex<T> end)
+        {
+            Dictionary<Vertex<T>, float> totalDistances = new Dictionary<Vertex<T>, float>();
+            List<Vertex<T>> visitedVertices = new List<Vertex<T>>();
+            PriorityQueue<Vertex<T>, float> queuedDistances = new PriorityQueue<Vertex<T>, float>();
+
+            foreach (var v in Vertices)
+            {
+                totalDistances.Add(v, float.PositiveInfinity);
+            }
+
+            totalDistances[start] = 0;
+
+            queuedDistances.Enqueue(start, 0);
+
+            while (visitedVertices.Contains(end))
+            {
+                Vertex<T> vertex = queuedDistances.Dequeue();
+
+                if (visitedVertices.Contains(vertex))
+                    continue;
+
+                visitedVertices.Add(vertex);
+
+                foreach(var neigh in vertex.Neighbors)
+                {
+                    //if(AirportHeuristic(neigh))
+                }
+
+            }
+
+
+
+            List<Vertex<T>> path = new List<Vertex<T>>();
+
+            return path;
+        }
+
+    
     }
 }

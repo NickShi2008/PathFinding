@@ -69,7 +69,7 @@ namespace PathFinding
             }
 
 
-            var result = dijkstraGraph.Dijkstra(dijkstraGraph.Search("JFK"), dijkstraGraph.Search("HOU"));
+            var result = dijkstraGraph.Dijkstra(dijkstraGraph.Search("JFK"), dijkstraGraph.Search("IND"));
 
             foreach (var index in result)
             {
