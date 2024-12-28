@@ -45,7 +45,7 @@ namespace PathFinding
 
         private bool SearchVertex(Vertex<T> vertex)
         {
-            bool check = Vertices.Contains(vertex); 
+            bool check = Vertices.Contains(vertex);
             return vertex != null && Vertices.Contains(vertex);
         }
 
@@ -55,7 +55,7 @@ namespace PathFinding
             {
                 Edge<T> AConnector = new Edge<T>(a, b, distance);
                 Edges.Add(AConnector);
-                if(!a.Neighbors.Contains(AConnector))
+                if (!a.Neighbors.Contains(AConnector))
                     a.Neighbors.Add(AConnector);
 
                 return true;
@@ -122,7 +122,7 @@ namespace PathFinding
 
 
             //looks till visits all vertex
-            while(!visitedVertices.Contains(end))
+            while (!visitedVertices.Contains(end))
             {
                 Vertex<T> currentVertex = queuedDistances.Dequeue();
 
@@ -156,7 +156,7 @@ namespace PathFinding
 
                     for (int i = 0; i < Edges.Count; i++)
                     {
-                        if (Edges[i].EndingPoint.Equals(lastVertex)  && Edges[i].StartingPoint.Value.Equals(vertex.Key.Value)
+                        if (Edges[i].EndingPoint.Equals(lastVertex) && Edges[i].StartingPoint.Value.Equals(vertex.Key.Value)
                             && vertex.Value + Edges[i].Distance == totalDistances[lastVertex])
                         {
                             lastVertex = vertex.Key;
@@ -202,9 +202,9 @@ namespace PathFinding
 
                 visitedVertices.Add(vertex);
 
-                foreach(var neigh in vertex.Neighbors)
+                foreach (var neigh in vertex.Neighbors)
                 {
-                    //if(AirportHeuristic(neigh))
+                    //if(Euclidean(neigh))
                 }
 
             }
@@ -216,6 +216,36 @@ namespace PathFinding
             return path;
         }
 
-    
+        /* public float Manhattan(Vertex<T> start, Vertex<T> end)
+          {
+              float dx = MathF.Abs(start.x - end.x);
+              float dy = MathF.Abs(start.x - end.y);
+              //distance from one square to another
+              float D = 1;
+              return D * (dx + dy);
+          }
+        
+
+        public float Diagonal(Vertex<T> start, Vertex<T> end)
+        {
+            float dx = MathF.Abs(start.x - end.x);
+            float dy = MathF.Abs(start.x - end.y);
+            //distance from one square to another
+            float D = 1;
+            float DTwo = MathF.Sqrt(2);
+            return D * (dx + dy) + (DTwo - 2 * D) * MathF.Min(dx, dy);
+
+        }
+
+        public float Euclidean(Vertex<T> start, Vertex<T> end)
+        {
+            float dx = MathF.Abs(start.x - end.x);
+            float dy = MathF.Abs(start.x - end.y);
+            //distance from one square to another
+            float D = 1;
+            float DTwo = MathF.Sqrt(2);
+            return D * MathF.Sqrt(dx*dx + dy*dy);
+
+        }*/
     }
 }
