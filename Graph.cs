@@ -51,16 +51,16 @@ namespace DijkstraAlgorithm
 
         public bool AddEdge(Vertex<T> a, Vertex<T> b, float distance)
         {
-            if (SearchVertex(a) && SearchVertex(b) && !a.HasEdge(b) && !b.HasEdge(a))
+            if (SearchVertex(a) && SearchVertex(b))
             {
                 Edge<T> AConnector = new Edge<T>(a, b, distance);
-                Edge<T> BConnector = new Edge<T>(b, a, distance);
+              //  Edge<T> BConnector = new Edge<T>(b, a, distance);
                 Edges.Add(AConnector);
-                Edges.Add(BConnector);
+              //  Edges.Add(BConnector);
                 if(!a.Neighbors.Contains(AConnector))
                     a.Neighbors.Add(AConnector);
-                if (!b.Neighbors.Contains(BConnector))
-                    b.Neighbors.Add(BConnector);
+               /* if (!b.Neighbors.Contains(BConnector))
+                    b.Neighbors.Add(BConnector);*/
 
                 return true;
             }
@@ -78,12 +78,12 @@ namespace DijkstraAlgorithm
             return false;
         }
 
-        public Vertex<T> Search(Vertex<T> vertex)
+        public Vertex<T> Search(T vertex)
         {
             int count = -1;
             for (int i = 0; i < Vertices.Count; i++)
             {
-                if (Vertices[i] == vertex)
+                if (Vertices[i].Value.Equals(vertex))
                 {
                     count = i;
                     break;
@@ -106,5 +106,83 @@ namespace DijkstraAlgorithm
             return null;
         }
 
+        public List<Vertex<T>> Dijkstra(Vertex<T> start, Vertex<T> end)
+        {
+            //Init
+            Dictionary<Vertex<T>, float> totalDistances = new Dictionary<Vertex<T>, float>();
+            List<Vertex<T>> visitedVertices = new List<Vertex<T>>();
+            PriorityQueue<Vertex<T>, float> queuedDistances = new PriorityQueue<Vertex<T>, float>();
+            
+
+            //set each vertex as Unknown
+            foreach (var v in Vertices)
+            {
+                totalDistances.Add(v, float.PositiveInfinity);
+            }
+
+            //prepare start vertex
+            totalDistances[start] = 0;
+
+            queuedDistances.Enqueue(start, 0);
+
+
+            //looks till visits all vertex
+            while (queuedDistances.Count > 0)
+            {
+                Vertex<T> currentVertex = queuedDistances.Dequeue();
+
+                if (visitedVertices.Contains(currentVertex))
+                    continue;
+                visitedVertices.Add(currentVertex);
+
+                foreach (var edge in currentVertex.Neighbors)
+                {
+                    if (totalDistances[currentVertex] + totalDistances[currentVertex]
+                        < totalDistances[edge.EndingPoint])
+                    {
+                        totalDistances[edge.EndingPoint] = totalDistances[currentVertex] + edge.Distance;
+
+
+                        queuedDistances.Enqueue(edge.EndingPoint, totalDistances[currentVertex] + edge.Distance);
+
+                    }
+
+
+                }
+            }
+
+
+            //traces backwards to the beginning
+
+            Stack<Vertex<T>> reversePath = new Stack<Vertex<T>>();
+            Vertex<T> lastVertex = end;
+            while (!lastVertex.Equals(start))
+            {
+                foreach (var vertex in totalDistances)
+                {
+
+                    for (int i = 0; i < Edges.Count; i++)
+                    {
+                        if (Edges[i].EndingPoint.Equals(lastVertex)  && Edges[i].StartingPoint.Value.Equals(vertex.Key.Value)
+                            && vertex.Value + Edges[i].Distance == totalDistances[lastVertex])
+                        {
+                            lastVertex = vertex.Key;
+                            reversePath.Push(Edges[i].EndingPoint);
+                            break;
+                        }
+                    }
+
+                }
+            }
+
+            List<Vertex<T>> path = new List<Vertex<T>>();
+
+            while (reversePath.Count > 0)
+            {
+                path.Add(reversePath.Pop());
+            }
+
+            return path;
+        }
     }
 }
