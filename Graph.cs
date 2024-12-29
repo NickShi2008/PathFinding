@@ -196,7 +196,8 @@ namespace PathFinding
         public void RearrangeQueue(PriorityQueue<Vertex<T>, float> queue, float originalDistance, Vertex<T> comparison)
         {
             PriorityQueue<Vertex<T>, float> placeHolder = queue;
-            bool hasBeenFound, hasBeenReplaced = false;
+            bool hasBeenFound = false;
+            bool hasBeenReplaced = false;
 
             while (queue.Count > 0)
             {
