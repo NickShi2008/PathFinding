@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace PathFinding
 {
@@ -122,7 +125,7 @@ namespace PathFinding
 
 
             //looks till visits all vertex
-            while (!visitedVertices.Contains(end))
+            while (queuedDistances.Count > 0)
             {
                 Vertex<T> currentVertex = queuedDistances.Dequeue();
 
@@ -138,7 +141,7 @@ namespace PathFinding
                         totalDistances[edge.EndingPoint] = totalDistances[currentVertex] + edge.Distance;
 
 
-                        queuedDistances.Enqueue(edge.EndingPoint, totalDistances[currentVertex] + edge.Distance);
+                        queuedDistances.Enqueue(edge.EndingPoint, totalDistances[edge.EndingPoint]);
 
                     }
 
@@ -147,6 +150,92 @@ namespace PathFinding
             }
             //traces backwards to the beginning
 
+            return FindPath(start, end, totalDistances);
+        }
+
+        public List<Vertex<T>> ASTAR(Vertex<T> start, Vertex<T> end)
+        {
+            Dictionary<Vertex<T>, float> totalDistances = new Dictionary<Vertex<T>, float>();
+            List<Vertex<T>> visitedVertices = new List<Vertex<T>>();
+            PriorityQueue<Vertex<T>, float> queuedDistances = new PriorityQueue<Vertex<T>, float>();
+
+            foreach (var v in Vertices)
+            {
+                totalDistances.Add(v, float.PositiveInfinity);
+            }
+
+            totalDistances[start] = 0;
+
+            queuedDistances.Enqueue(start, 0);
+
+            while (queuedDistances.Count > 0)
+            {
+                Vertex<T> vertex = queuedDistances.Dequeue();
+
+                if (visitedVertices.Contains(vertex))
+                    continue;
+
+                visitedVertices.Add(vertex);
+
+                foreach (var neigh in vertex.Neighbors)
+                {
+
+                    if (totalDistances[vertex] + neigh.Distance < totalDistances[neigh.EndingPoint])
+                    {
+                        totalDistances[neigh.EndingPoint] = totalDistances[vertex] + neigh.Distance;
+
+                        RearrangeQueue(queuedDistances, totalDistances[vertex] + neigh.Distance, neigh.EndingPoint);
+                    }
+                }
+
+            }
+
+            return FindPath(start, end, totalDistances);
+        }
+
+        public void RearrangeQueue(PriorityQueue<Vertex<T>, float> queue, float originalDistance, Vertex<T> comparison)
+        {
+            PriorityQueue<Vertex<T>, float> placeHolder = queue;
+            bool hasBeenFound, hasBeenReplaced = false;
+
+            while (queue.Count > 0)
+            {
+                queue.TryDequeue(out var currentVertex, out float currentDistance);
+
+                if (currentVertex.Equals(comparison))
+                {
+                    hasBeenFound = true;
+                    if (originalDistance < currentDistance)
+                    {
+                        placeHolder.Enqueue(comparison, originalDistance);
+                        hasBeenReplaced = true;
+                    }
+                    else
+                    {
+                        placeHolder.Enqueue(currentVertex, currentDistance);
+                    }
+                }
+                else
+                {
+                    placeHolder.Enqueue(currentVertex, currentDistance);
+                }
+            }
+
+            if (!hasBeenFound)
+            {
+                placeHolder.Enqueue(comparison, originalDistance);
+            }
+
+            while (placeHolder.Count > 0)
+            {
+                placeHolder.TryDequeue(out var tempNode, out var tempPriority);
+
+                queue.Enqueue(tempNode, tempPriority);
+            }
+        }
+
+        public List<Vertex<T>> FindPath(Vertex<T> start, Vertex<T> end, Dictionary<Vertex<T>, float> totalDistances)
+        {
             Stack<Vertex<T>> reversePath = new Stack<Vertex<T>>();
             Vertex<T> lastVertex = end;
             while (!lastVertex.Equals(start))
@@ -174,44 +263,6 @@ namespace PathFinding
             {
                 path.Add(reversePath.Pop());
             }
-
-            return path;
-        }
-
-        public List<Vertex<T>> ASTAR(Vertex<T> start, Vertex<T> end)
-        {
-            Dictionary<Vertex<T>, float> totalDistances = new Dictionary<Vertex<T>, float>();
-            List<Vertex<T>> visitedVertices = new List<Vertex<T>>();
-            PriorityQueue<Vertex<T>, float> queuedDistances = new PriorityQueue<Vertex<T>, float>();
-
-            foreach (var v in Vertices)
-            {
-                totalDistances.Add(v, float.PositiveInfinity);
-            }
-
-            totalDistances[start] = 0;
-
-            queuedDistances.Enqueue(start, 0);
-
-            while (visitedVertices.Contains(end))
-            {
-                Vertex<T> vertex = queuedDistances.Dequeue();
-
-                if (visitedVertices.Contains(vertex))
-                    continue;
-
-                visitedVertices.Add(vertex);
-
-                foreach (var neigh in vertex.Neighbors)
-                {
-                    //if(Euclidean(neigh))
-                }
-
-            }
-
-
-
-            List<Vertex<T>> path = new List<Vertex<T>>();
 
             return path;
         }
